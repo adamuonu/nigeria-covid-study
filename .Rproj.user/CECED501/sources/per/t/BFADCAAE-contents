@@ -1,0 +1,534 @@
+---
+title: "Results of Statistical Analyses"
+subtitle: "Predictors of mortality of hospitalized patients with laboratory-confirmed severe acute respiratory syndrome coronavirus 2 in Nigeria: A retrospective analysis of high burden states"
+date: "October 12, 2021"
+output:
+  pdf_document:
+    latex_engine: xelatex
+    keep_tex: yes
+    toc: no
+    toc_depth: 2
+    number_sections: false
+    fig_caption: yes
+documentclass: article
+classoptions: a4
+keep_md: true
+mainfont: "Trebuchet MS"
+sansfont: Arial
+monofont: Menlo
+email: adamu.onu@outlook.com
+fontsize: 10pt
+geometry: margin=1in
+bibliography: references.bib
+csl: vancouver.csl
+link-citations: true
+header-includes:
+  - \usepackage{booktabs}
+  - \usepackage{longtable}
+  - \usepackage{tabularx}
+  - \usepackage{array}
+  - \usepackage{multirow}
+  - \usepackage{wrapfig}
+  - \usepackage{float}
+  - \usepackage{colortbl}
+  - \usepackage{pdflscape}
+  - \usepackage{tabu}
+  - \usepackage{threeparttable}
+  - \usepackage{threeparttablex}
+  - \usepackage[normalem]{ulem}
+  - \usepackage{makecell}
+  - \usepackage{xcolor}
+  - \usepackage{amsmath}
+  - \usepackage{setspace}\onehalfspacing
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+suppressPackageStartupMessages(require(tidyverse))
+suppressPackageStartupMessages(require(gtsummary))
+suppressPackageStartupMessages(require(ehahelper))
+suppressPackageStartupMessages(require(parameters))
+suppressPackageStartupMessages(require(huxtable))
+suppressPackageStartupMessages(require(sjPlot))
+suppressPackageStartupMessages(require(ggeffects))
+suppressPackageStartupMessages(require(ggplot2))
+suppressPackageStartupMessages(require(ggpubr))
+suppressPackageStartupMessages(require(ggthemes))
+suppressPackageStartupMessages(require(survival))
+suppressPackageStartupMessages(require(survminer))
+
+options(huxtable.latex_use_fontspec  = TRUE)
+options(huxtable.long_minus          = TRUE)
+# options(huxtable.latex_siunitx_align = TRUE)
+options(huxtable.autolabel           = TRUE)
+options(huxtable.autoformat          = TRUE)
+options(scipen = 999)
+
+fdta <- readRDS('data/cleaned/covid_data.rds')
+
+#  ~~ Data set for survival analysis (observations missing time variable dropped)
+dta <- readRDS('data/analysis/dta.rds')
+St  <- Surv(time = dta$study_time, event = dta$mortality, type = 'right')
+
+#  ~~ Data set for logistic regression and descriptive analyses
+dtb <- readRDS('data/analysis/dtb.rds')
+
+#  -- Model objects  ----
+log_models <- readRDS('models/log_models.rds')
+cox_models <- readRDS('models/cox_models.rds')
+
+#  -- Graphics objects ----
+states_map <- readRDS(file = 'graphics/map.rds')
+km_plots   <- readRDS(file = 'graphics/KM_plots.rds')
+forest_plot <- readRDS('graphics/forest.rds')
+interaction_plot <- readRDS(file = "graphics/interaction_plot.rds")
+
+num_of_sites  <- length(table(fdta$site))
+num_of_states <- length(table(fdta$state))
+
+```
+
+\newpage
+
+\tableofcontents
+
+\newpage
+
+\listoftables
+
+\newpage
+
+\listoffigures
+
+\newpage
+
+# Background
+
+The current COVID 19 pandemic has resulted in a high number of deaths and associated disruption of public health and socioeconomic activities of countries and populations. As at 9th of April 2021, Nigeria had recorded 163,581 confirmed cases, with 150,005 cases discharged, 7,518 cases on admission and 2,058 deaths with a significant increase in the number of confirmed cases and concurrent deaths since the beginning of the second wave of infections. Most of these deaths have been in-hospital. Little is known about the deaths in the community due largely to poor community records of deaths and other vital statistics. The weak Nigerian health system is thought to have led to a considerably high in-hospital mortality especially in settings where critical care services and resources are scarce. Underlying morbidities such as malnutrition, anemia, HIV/AIDs, and chronic respiratory conditions, diabetes and heart failure have been shown to be important contributors to high global mortality in the current COVID 19 pandemic.
+
+Even though several global reports have been written about the impact of the COVID 19 pandemic on clinical outcomes especially the attendant morbidity and mortality, little is known about the situation in Nigeria. Understanding the relative contributions and probable mechanism through which sociodemographic, clinical and laboratory factors relate to the high in-hospital mortality in Nigeria could help us identify weak points within the health system that can be improved upon for current and future responses. In addition, such review will also help us plan and prioritize health infrastructure and resource allocation for better health outcomes in our public health system.
+
+The aim of this study was to describe clinical characteristics and factors associated with mortality and time to mortality for patients hospitalized with laboratory-confirmed severe acute respiratory syndrome coronavirus 2 (SARS-CoV-2) infection in Nigeria.
+
+# Data Analysis Plan
+
+## Study Setting
+
+Nigeria is Africa's most populous country. We studied patients with laboratory-confirmed SARS-CoV-2 infection from `r num_of_sites` COVID 19 treatment centers across `r num_of_states` states in Nigeria including the Federal Capital Territory (see Figure \ref{fig:states-map}).
+
+## Study Design
+
+This study was a retrospective cross-sectional study.
+
+## Data Collection
+
+```{r states-map, fig.align='center', fig.width=7.5, fig.cap="States with available data",fig.pos='h!'}
+states_map
+```
+
+We extracted data from the World Health Organization (WHO) nCOV database platform (OpenClinica Electronic Data Capture [EDC] System) for `r num_of_sites` sites across `r num_of_states` states in Nigeria (see Figure \ref{fig:states-map}). We retrieved data on date of admission, enrollment date, demographic data (patients&rsquo; sex, age, health worker), data on pre-existing morbidity (chronic cardiac disease, hypertension, chronic pulmonary disease, asthma, chronic kidney disease, chronic neurological disorder, HIV, diabetes, current smoking, tuberculosis, asplenia, malignant neoplasm), pre-admission and chronic medication (ACE inhibitors, angiotensin II receptor blockers, non-steroidal anti-inflammatory drugs in the 14 days prior to admission), medications received on day of admission or following (antiviral, corticosteroid, chloroquine/hydroxychloroquine), admitted to ICU or HDU, supplemental oxygen given, use of non-invasive ventilation, use of invasive ventilation, outcome (discharged alive, hospitalized, transfer to other facility, death, palliative discharge), and outcome date. Following data cleaning, data recoding and removal of missing observations we were left with `r format(nrow(dtb), big.mark=",")` records for data analysis. Two states (Delta and Taraba) were excluded because the states each had less than 10 records: Delta (6), Taraba (1).
+
+## Study Variables
+
+The primary study outcome was death for a PCR confirmed infection with SARS-COV-2 virus. The secondary study outcome was time from enrollment to death. We coded the primary study outcome as 1 if the patient died or 0 if outcome was censored. Time following admission was right-censored at 84 days post-enrollment. The main explanatory variable was severity of disease. We defined severity of disease as a composite score derived from any or all of:
+
+1. Received supplemental oxygen therapy on any day during hospitalization,
+2. Admitted to the ICU or HDU at any point during hospital stay,
+3. Received non-invasive ventilation (CPAP/BIPAP) on any day during hospitalization, and
+4. Received invasive ventilation (mechanical ventilator) on any day during hospitalization
+
+These variables were assigned a score of 1 if reported in the database or 0, otherwise. The severity score was calculated as the sum of these individual scores with a range of 0 to 4. The other explanatory variables were demographic (age, sex, healthcare worker), pre-existing morbidity (), malaria, HIV infection, pre-admission and chronic medications, and medications received on admission or following admission. These explanatory variables were coded as 1 if reported or 0 if not reported or missing. 
+
+## Statistical Analysis
+
+### Power calculation
+
+The relationship between the log odds of the mortality and *k* explanatory variables may be modeled thus:
+
+$${\small\log\Big(\frac{p}{1-p}\Big) = \beta_1x_1 + \beta_2x_2 + \cdots + \beta_kx_k}$$
+The main explanatory covariate was severity score assumed to be normally distributed based on the central limit theorem. Given two-sided testing of $H_0:\beta_i = 0$ on the log scale versus $H_1:\beta_i \neq 0$ the minimum sample size is then, according to Hsieh et al.,[@hsieh1998] given by:
+
+$$\small{n = \frac{(z_{1-\alpha/2} + z_{\gamma})^2}{p(1 - p)(1-\rho^{2}_i)\hat{\beta}^2}}$$
+with level $\alpha$ and power $\gamma$, the standard deviation of the predictor $x_i$ is $\sigma_{x_i}$, $p$ the marginal prevalence of the outcome, $\rho^{2}_i$ is the multiple correlation of $x_i$ with all the other predictors (i.e. the $R^2$), $z_{1-\alpha/2}$ and $z_\gamma$ are quantiles of the standard normal distribution corresponding to level and power, $\hat{\beta}^2$ is the effect size (i.e. the log odds ratio):
+
+$$\hat{\beta} = \log\Bigg(\frac{p_1/1-p_1}{p_2/1-p_2}\Bigg)$$
+and $p_1$, $p_2$ are the event rates at the mean of the severity score, and one standard deviation above the mean severity score respectively. 
+
+Therefore the power is calculated as
+
+$$\gamma = 1 - \Phi\Big(z_{1-\alpha/2} - |\hat{\beta}|\sqrt{np(1-p)(1-\rho^2_i)}\Big)$$
+Where $\Phi$ is the standard normal cumulative distribution function.
+
+Using G*Power[@faul2009] with $\alpha$ = 0.05, $\hat{\beta}$ = 1.5, $p$ = 0.05, $R^2$ = 0.25 and assumed mean severity score of 2 with standard deviation of 1, we determined that the number of subjects of `r format(nrow(dtb), big.mark = ",")` had greater than 95% power for a two-tailed hypothesis test (see Figure \ref{fig:power-analysis}).
+
+```{r power-analysis, fig.align='center', fig.width=6.5, fig.cap="Plot of sample sizes versus power",fig.pos='h'}
+knitr::include_graphics(path = "power_plot.pdf", error = FALSE)
+```
+
+\clearpage
+### Regression modeling
+
+The term multilevel refers to individuals at a lower level who are nested within spatial units at higher levels.[@subramanian2004] Multilevel methods are suitable for the statistical analysis of data with a nested structure. Multilevel regression modeling was used for the data analysis in this study. These data were from several COVID-19 treatment sites across Nigeria (Figure \ref{fig:states-map}) with clustering of patients by site. The sites in turn may be considered to be nested by facility type e.g. tertiary hospital, non-tertiary hospital, and other treatment site.
+
+Multilevel statistical modeling incorporates models at each level of analysis into a full multilevel model. In general terms, for example, in a two-level nested model, the model at the first level is expressed as
+
+$$y_{ij} = \beta_{\textsf{0}j} + \beta_{1}x_{\textsf{1}ij} + e_{\textsf{0}ij}$$
+Where $y_{ij}$ is the measure of the dependent variable for the $i$th individual in the $j$th group. The term $\beta_{\textsf{0}j}$ is a constant and is the measure of the dependent variable for the jth group, and $\beta_{1}$ is the fixed marginal effect of the predictor variable ($x_{\textsf{1}ij}$) on the dependent variable.
+
+The individual or the level-1 residual term, $e_{\textsf{0}ij}$, is assumed to have a normal
+distribution with a mean of 0 and a variance, $\sigma^2_{e_{0}}$. In multilevel modeling, the coefficients at level-1 become the outcome variables at level-2. Thus, the model at level-2 can be written as
+
+$$\beta_{\textsf{0}j} = \beta_{0} + u_{\textsf{0}j}$$
+
+meaning the mean measure of the dependent variable for the $j$th group is split into $\beta_{0}$ (the
+average for the dependent variable across all groups), and $u_{\textsf{0}j}$, the effect specific to the $j$th group, and $u_{\textsf{0}j}$ can be treated similar to individual-level residuals. Combining the two equations above yields the full model. This full model is known as a random-intercepts or variance components model:
+
+$$y_{ij} = \beta_{0} + \beta_{1}x_{\textsf{1}ij} + (u_{\textsf{0}j} + e_{\textsf{0}ij})$$
+
+In this multilevel statistical model, the variance at level-2, $\sigma^2_{u_{0}}$, measures the
+group differences after accounting for the compositional effect of the predictor variable and thus separates the effects of the individual-level variables from the contextual differences between group-level variables.[@subramanian2004] Therefore using multilevel modeling we can (a) model the variation in patient-level regression coefficients across sites, (b) account for the patient- and site-level variation in estimating site-level coefficients, and (c) estimate regression coefficients for particular groups.[@gelman2007]
+
+We performed univariate analysis using the Fisher exact test, or the Wilcoxon test as appropriate to describe characteristics of patients who had non-missing outcome data (see Table \ref{tab:table-1}). We also did univariate survival analysis using the Kaplan-Meier method to assess the relationship between time from enrollment to death and patient characteristics. We further fitted mixed effects logistic regression models and Cox proportional hazards regression models to assess predictors of COVID-19 hospital death. Study site and facility type were included in the models as random effects while severity score, patients&rsquo; sex, age, health worker status, chronic cardiac disease, hypertension, respiratory disease (any of chronic pulmonary disease, active or previous tuberculosis, asthma), chronic kidney disease, chronic neurological disorder, HIV, diabetes, current smoking, malignant neoplasm, malaria, pre-admission and chronic medication (ACE inhibitors, angiotensin II receptor blockers, non-steroidal anti-inflammatory drugs in the 14 days prior to admission), medications received on day of admission or following admission (antiviral, corticosteroid, azithromycin, chloroquine/hydroxychloroquine) were included as fixed effects. We report the models with the smallest AIC selected by stepwise regression. All statistical analysis were conducted using R version 4.1.1.[@rcoreteam2021] Mixed effects Cox regression was done using the `coxme` package.[@therneau2020]. A p value < 0.05 is considered as statistically significant.
+
+\newpage
+
+# Results
+
+## Patient characteristics
+
+```{r table-1, echo=FALSE, results='asis', message=FALSE}
+#'  ---------------------------------------------------------------------------
+#'  prepare table using gtsummary package
+#'  http://www.emilyzabor.com/cleveland-r-gtsummary/#1
+#'  ---------------------------------------------------------------------------  
+table_1 <- dtb %>% 
+    select(mortality, severity, study_time, age, age_group, male, health_worker, ccdx, diabetes, 
+           hypertension, smoking, respiratory_dx, neurologic_dx, neoplasm, ckd, hiv, malaria,
+           antiviral, acei_arb, azithromycin, steroid, chloroquine, nsaid, coagulate) %>%
+    tbl_summary(by = 'mortality', missing = 'no', missing_text = "Missing", 
+                digits = list(all_categorical() ~ c(0,1))) %>%
+    add_stat_label(label = all_categorical() ~ NA) %>%
+    add_p(test.args = age_group ~ list(simulate.p.value = TRUE, B = 5000),
+          pvalue_fun = function(x) style_pvalue(x, digits = 3)) %>%
+    bold_p() %>%
+    modify_header(update = list(label ~ "**Variables**", 
+                                stat_1 ~ '**No**,  *N* = {n}',
+                                stat_2 ~ '**Yes**, *N* = {n}',
+                                p.value ~ '**p value**')) %>%
+    modify_caption(caption = "Patient characteristics") %>%
+    modify_spanning_header(all_stat_cols() ~ "**Died**") %>%
+    modify_footnote(update = everything() ~ "ACE-i/ARB = Angiotensin-converting enzyme inhibitors; NSAIDs = Non-steroidal anti-inflammatory drugs; CQ/HCQ = Chloroquine/hydroxychloroquine",
+                    abbreviation = TRUE) %>%
+#'  ---------------------------------------------------------------------------
+#'  Format table using huxtable
+#'  ---------------------------------------------------------------------------
+    as_hux_table() %>%
+    set_top_border(row = 1, value = 0.4) %>%
+    set_bottom_border(row = 1, col = c(2,3), value = 0.4) %>%
+    set_col_width(c(.5, .2, .2, .1)) %>%
+    map_align(by_cols('left', 'center', 'center', 'right')) %>%
+    set_width(0.96) %>%
+    set_font_size(8) %>%
+    set_tb_padding(1) %>%
+    set_number_format(fmt_pretty()) %>%
+    #set_label('tab:table-1') %>%
+    set_latex_float('h!') %>%
+    map_background_color(by_rows("white", "grey94")) %>%
+    set_background_color(row = c(1,2,36), value = "white")
+
+table_1 
+```
+
+\pagebreak
+Table \ref{tab:table-1} shows that of the `r format(nrow(dtb), big.mark=",")` patients with non-missing outcomes, `r length(dtb$mortality[dtb$mortality == 'Yes'])` patients died representing a `r round(100*sum(dtb$mortality == 'Yes')/length(dtb$mortality), 2)`% mortality rate. Half of the deaths occurred within two days post-enrollment. Unadjusted analyses showed that increasing severity score, older age, being male, smoking, chronic cardiac disease, diabetes, hypertension, chronic kidney disease, corticosteroid use, and systemic coagulation were statistically significantly associated with increased mortality in these patients. Being a healthcare worker was statistically significantly associated decreased mortality.
+
+\newpage
+## Kaplan-Meier survival curves
+
+This section includes the Kaplan-Meier survival curves of patients stratified by different variables. Similar to Table \ref{tab:table-1}, the time-to-event analysis showed that increasing age, male sex, diabetes, hypertension, current smoking, chronic kidney disease, steroid use, and systemic coagulation were associated with decreased survival probability. Unlike seen in table \ref{tab:table-1}, healthcare worker status, chronic cardiac disease were not statistically significantly associated with survival probability. The use of chloroquine/hydroxychloroquinne however was found to be statistically significantly associated with increased probability of survival (Figure \ref{fig:chloroquine}).
+
+### Demographics
+
+```{r age, fig.align='center', fig.width=5.5, fig.cap="Survival curves of patients stratified by age",fig.pos='h'}
+km_plots$`age group`
+```
+
+\newpage
+
+```{r sex, fig.align='center', fig.width=5.5, fig.cap="Survival curves of patients stratified by sex",fig.pos='h'}
+km_plots$sex
+```
+
+\newpage
+
+```{r health-worker, fig.align='center', fig.width=5.5, fig.cap="Survival curves of patients stratified by healthcare worker status",fig.pos='h'}
+km_plots$`health worker`
+```
+
+\newpage
+### Comorbid conditions
+
+```{r cardiac-disease, fig.align='center', fig.width=5.5, fig.cap="Survival curves of patients stratified by chronic cardiac disease status",fig.pos='h'}
+km_plots$`cardiac disease`
+```
+
+\newpage
+
+```{r diabetes, fig.align='center', fig.width=5.5, fig.cap="Survival curves of patients stratified by diabetes status",fig.pos='h'}
+km_plots$diabetes
+```
+
+\newpage
+
+```{r hypertension, fig.align='center', fig.width=5.5, fig.cap="Survival curves of patients stratified by hypertension status",fig.pos='h'}
+km_plots$hypertension
+```
+
+\newpage
+```{r smoking, fig.align='center', fig.width=5.5, fig.cap="Survival curves of patients stratified by current smoking status",fig.pos='h'}
+km_plots$smoking
+```
+
+\newpage
+```{r respiratory-disease, fig.align='center', fig.width=5.5, fig.cap="Survival curves of patients stratified by respiratory disease status",fig.pos='h'}
+km_plots$`respiratory disease`
+```
+
+\newpage
+```{r neoplasm, fig.align='center', fig.width=5.5, fig.cap="Survival curves of patients stratified by malignant neoplasm status",fig.pos='h'}
+km_plots$neoplasm
+```
+
+\newpage
+```{r ckd, fig.align='center', fig.width=5.5, fig.cap="Survival curves of patients stratified by chronic kidney disease status",fig.pos='h'}
+km_plots$`chronic kidney disease`
+```
+
+\newpage
+```{r hiv, fig.align='center', fig.width=5.5, fig.cap="Survival curves of patients stratified by HIV status",fig.pos='h'}
+km_plots$hiv
+```
+
+\newpage
+```{r malaria, fig.align='center', fig.width=5.5, fig.cap="Survival curves of patients stratified by malaria status",fig.pos='h'}
+km_plots$malaria
+```
+
+\newpage
+### Medications
+
+```{r antiviral, fig.align='center', fig.width=5.5, fig.cap="Survival curves of patients stratified by antiviral medication",fig.pos='h'}
+km_plots$antiviral
+```
+
+\newpage
+
+```{r ace-inhibitors, fig.align='center', fig.width=5.5, fig.cap="Survival curves of patients stratified by ACE-i/ARB medication",fig.pos='h'}
+km_plots$`ace inhibitors`
+```
+
+\newpage
+```{r azithromycin, fig.align='center', fig.width=5.5, fig.cap="Survival curves of patients stratified by azithromycin use",fig.pos='h'}
+km_plots$azithromycin
+```
+
+\newpage
+```{r steroid, fig.align='center', fig.width=5.5, fig.cap="Survival curves of patients stratified by steroid use",fig.pos='h'}
+km_plots$steroid
+```
+
+\newpage
+```{r chloroquine, fig.align='center', fig.width=5.5, fig.cap="Survival curves of patients stratified by chloroquine/hydroxychloroquine use",fig.pos='h'}
+km_plots$chloroquine
+```
+
+\newpage
+```{r nsaids, fig.align='center', fig.width=5.5, fig.cap="Survival curves of patients stratified by NSAIDs use",fig.pos='h'}
+km_plots$nsaids
+```
+
+\newpage
+```{r coagulation, fig.align='center', fig.width=5.5, fig.cap="Survival curves of patients stratified by systemic coagulation status",fig.pos='h'}
+km_plots$coagulation
+```
+
+\newpage
+## Logistic regression model
+
+We fitted a mixed effects logistic regression model using maximum likelihood and the bound optimization by quadratic approximation algorithm to predict mortality with severity, age group, male gender, health worker status, chronic cardiac disease, diabetes, respiratory disease ((defined as presence of any of chronic pulmonary disease, active or previous tuberculosis, and asthma), chronic kidney disease, malaria, azithromycin and chloroquine entered into the model as fixed effects. The model included site and facility type as random effects. The most parsimonious model arrived at through backward stepwise regression is shown in Table \ref{tab:logistic-regression} below.
+
+The model's total explanatory power is substantial (conditional *R*&sup2; = 0.55) and the part related to the fixed effects alone (marginal *R*&sup2;) is of 0.25. The intra-class correlation coefficient (ICC) =  0.40. The conditional *R*&sup2; is the proportion of overall variance explained by the model when the site and facility type random effects are taken into account. The marginal *R*&sup2; is the proportion of the overall variance explained by the fixed effects only. The ICC is a measure of the correlation between patients within clusters. It ranges from 0 to 1. Confidence Intervals (CIs) at the 95% level and p-values were computed using the Wald approximation.
+
+```{r logistic-regression, results='asis', message=FALSE}
+logit_model   <- log_models$`Model 2`
+stt     <- broom.mixed::glance(logit_model)
+table_2 <-
+    tbl_regression(x = logit_model,
+                   exponentiate = TRUE,
+                   estimate_fun = function(x) style_number(x, digits = 2),
+                   pvalue_fun   = function(x) style_pvalue(x, digits = 3)) %>%
+    modify_header(update = list(label ~ "**Predictors**",
+                                p.value ~ '*p* value')) %>%
+    #add_glance_table(
+    #    #label = list(sigma = "\U03C3"),
+    #    include = c(logLik, AIC)
+    #) %>%
+    modify_footnote(update = everything() ~ "OR = Odds Ratio, CI = Confidence Interval, CQ/HCQ = Chloroquine/hydroxychloroquine.", abbreviation = TRUE) %>%
+    as_hux_table() %>%
+    set_top_border(row = c(1,2), value = 0.4) %>%
+    set_col_width(c(.5, .2, .2, .1)) %>%
+    map_align(by_cols('left', '.', 'center', 'right')) %>%
+    set_width(0.96) %>%
+    set_font_size(8) %>%
+    set_tb_padding(1) %>%
+    #set_number_format(col =  4, value = 3) %>%
+    set_contents(row = 4, col = c(2,3), value = "...") %>%
+    set_contents(row = 4, col = 4, value = "") %>%
+    insert_row('', after = 18, fill = '') %>%
+    set_tb_borders(row = 19, value = 0) %>%
+    insert_row(c('Number of observations', '3313'), after = 19, fill = '') %>%
+    insert_row(c('Conditional R\u00B2', '0.553'), after = 20, fill = '') %>%
+    insert_row(c('Marginal R\u00B2', '0.250'), after = 21, fill = '') %>%
+    insert_row(c("Log-likelihood", paste0(stt$logLik)), after = 22, fill = '') %>%
+    insert_row(c("AIC", paste0(stt$AIC)), after = 23, fill = '') %>%
+    set_top_border(row = 25, value = 0.8) %>%
+    set_number_format(row = c(21,22,23,24), col = 2, value = 2) %>%
+    set_latex_float('h!') %>%
+    set_caption('Mixed effects logistic regression model of predictors of mortality') %>%
+    map_background_color(by_rows("white", "grey94")) %>%
+    set_background_color(final(1), value = "white")
+
+table_2
+```
+
+\pagebreak
+
+The mixed effects logistic regression model showed that severity score, age, male sex, chronic cardiac disease, diabetes, and chronic kidney disease were statistically significant predictors of mortality in these hospitalized patients. Healthcare worker status, use of azithromycin, and chloroquine/hydroxychloroquine use were predictors of decreased mortality (see Table \ref{tab:logistic-regression} and Figure \ref{fig:forest-plot}). The forest plot shows the standardized model estimates, thus we see that age > 75 years has the largest effect on mortality while use of chloroquine/hydroxychloroquine has the largest protective effect.
+
+```{r forest-plot, fig.align='center', fig.width=6.5, fig.cap="Forest plot of standardized model coefficients", fig.pos='h'}
+
+forest_plot + 
+    aes(shape = group) + 
+    geom_hline(yintercept = 1, linetype = "dashed", size = 0.5, color = "gray40", alpha = 0.4) +
+    scale_shape_manual(values = 23) + 
+    theme_sjplot() + 
+    theme(legend.position = 'none', axis.text = element_text(size = 10))
+                       
+# coef_labels <- c(severity = "Severity score",
+#                  `age_group18-45`="18-45 years",
+#                  `age_group46-65`="46-65 years",
+#                  `age_group66-75`="66-75 years",
+#                  `age_group>75`=">75 years",
+#                  male="Male",
+#                  health_worker="Healthcare worker",
+#                  ccdx="Chronic cardiac disease",
+#                  diabetes="Diabetes",
+#                  respiratory_dx="Respiratory disease",
+#                  ckd="Chronic kidney disease",
+#                  malaria="Malaria",
+#                  azithromycin="Azithromycin",
+#                  chloroquine="CQ/HCQ",
+#                  `azithromycin:chloroquine`="Azithromycin * CQ/HCQ")
+# 
+# plot_model(logit_model,
+#            type = "std2",
+#            title = "",
+#            axis.labels = coef_labels,
+#            colors = 'system',
+#            show.values = T,
+#            value.offset = 1,
+#            group.terms = rep(1,15),
+#            value.size = 2,
+#            dot.size = 2)
+
+```
+
+There is an interaction effect of azithromycin and chloroquine. There is an interaction of azithromycin on the effect of chloroquine (see Figure \ref{fig:interaction-plot}). There appears to be a blunting of the effect of chloroquine on mortality by azithromycin. The predicted probability of mortality in those who did not receive chloroquine/hydroxychloroquine or azithromycin was 1.9% compared to 0.6% for those who received only azithromycin. This contrasted with a predicted probability of mortality in those who received only chloroquine/hydroxychloroquine of 0.1% compared to 0.4% for those who received both chloroquine/hydroxychloroquine and azithromycin. In other words, taking only chloroquine/hydroxychloroquine was associated with a lower probability of mortality than taking both chloroquine/hydroxychloroquine and azithromycin despite there being an association with lower mortality with both drugs alone. However, it should be noted that the size of this interaction effect is small and unlikely to be clinically meaningful. It may not be reproducible and it may be a spurious finding arising as a result of unknown patient or study site characteristics, although we tried to account for site effects by including site as a random effect in the regression model.
+
+```{r interaction-plot, fig.align='center', fig.width=5.5, fig.cap="Interaction between azithromycin and chloroquine",fig.pos='h'}
+
+interaction_plot
+
+# p <- ggeffect(model = logit_model, 
+#               terms = c('chloroquine','azithromycin'), 
+#               type = 're', 
+#               condition = c(severity = 2, age_group = '46-65', male = 1, health_worker = 1, 
+#                             ccdx = 1, diabetes = 1, respiratory_dx = 1, ckd = 1, 
+#                             malaria = 1, azithromycin = 1, chloroquine = 1)
+#               )
+# 
+# plot(p, ci = FALSE) + scale_y_continuous(labels=scales::percent)
+```
+
+\clearpage
+## Cox regression model
+
+```{r cox-regression, results='asis'}
+m <- cox_models$`Model 2`
+
+#  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#  extract model coefficients, &c.
+#  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+md <- model_parameters(m, exponentiate = TRUE)
+md <- md %>% transmute(
+    #Predictors = Parameter,
+    HR         = round(Coefficient, 2),
+    `95% CI`   = paste0(format(round(CI_low, 2), nsmall = 2), ', ', 
+                        format(round(CI_high, 2), nsmall =2)),
+    `p value`  = case_when(p < .001 ~ '<0.001', TRUE ~ paste0(round(p, 3)))
+)
+
+stt <- broom::glance(m)
+
+md %>% 
+    as_huxtable() %>%
+    insert_column(
+        c('Predictors','Severity score','\u00A0\u00A0 18-45','\u00A0\u00A0 46-65',
+          '\u00A0\u00A0 66-75','\u00A0\u00A0 >75', 'Male','Health care worker', 
+          'Chronic cardiac disease (not hypertension)', 'Diabetes',
+          'Respiratory disease', 'Chronic kidney disease', 'Malaria','Azithromycin','CQ/HCQ', 
+          'Azithromycin * CQ/HCQ')
+    ) %>%
+    
+    set_header_rows(row = 1, value = TRUE) %>%
+    style_headers(bold = TRUE) %>%
+    set_top_border(row = c(1,2), value = 0.4) %>%
+    insert_row('Age group', after = 2, fill = '') %>%
+    insert_row('\u00A0\u00A0 <18', after = 3, fill = '...') %>%
+    set_contents(row = 4, col = 4, value = "") %>%
+    set_col_width(c(.5, .2, .2, .1)) %>%
+    map_align(by_cols('left', '.', 'center', 'right')) %>%
+    set_width(0.96) %>%
+    set_font_size(8) %>%
+    set_tb_padding(1) %>%
+    insert_row("", after = 18, fill = "") %>%
+    #  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #  insert model statistics
+    #  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    insert_row(c("Number of observations", "3178"), after = 19, fill = '') %>%
+    insert_row(c("Number of events", "192"), after = 20, fill = '') %>%
+    insert_row(c("site \u03C3\u00B2", paste0(stt$random_variance_site)), after = 21, fill = '') %>%
+    insert_row(c("facility type \u03C3\u00B2", paste0(stt$random_variance_facility_type)), 
+               after = 22, fill = '') %>%
+    insert_row(c("Log-likelihood", paste0(stt$logLik)), after = 23, fill = '') %>%
+    insert_row(c("AIC", paste0(stt$AIC)), after = 24, fill = '') %>%
+    insert_row('HR = Hazard ratio, CI = Confidence Interval', after = 25, colspan = 4, fill = '') %>%
+    #  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #  format numbers to remove scientific notation and look better
+    #  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    set_number_format(col =  4, value = 3) %>%
+    set_number_format(row = 20, col = 2, value = 0) %>%
+    set_number_format(row = c(17,22,24,25), col = 2, value = 2) %>%
+    set_top_border(row = 26, value = 0.8) %>%
+    set_caption('Mixed effects cox regression model of predictors of time to mortality') %>%
+    map_background_color(by_rows("white", "grey94")) %>%
+    set_background_color(final(1), value = "white")
+
+```
+
+Table \ref{tab:cox-regression} shows the results of the Cox regression model with site and facility type included in the model as shared frailty terms to account for their random effects. Table \ref{tab:cox-regression} presents similar results to those of the mixed effects logistic regression model shown in table \ref{tab:logistic-regression}. Statistically significant increased hazards for mortality are seen for increasing severity score, increasing age, male sex, chronic cardiac disease, diabetes, and chronic kidney disease in these hospitalized patients. Healthcare worker status, use of azithromycin, and chloroquine/hydroxychloroquine use were associated with reduced hazard ratios. Respiratory disease seems to be associated with reduced hazards ratio as well.
+
+\clearpage
+
+# References

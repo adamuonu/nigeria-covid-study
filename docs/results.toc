@@ -1,0 +1,18 @@
+\contentsline {section}{Background}{5}{section*.4}%
+\contentsline {section}{Data Analysis Plan}{5}{section*.5}%
+\contentsline {subsection}{Study Setting}{5}{section*.6}%
+\contentsline {subsection}{Study Design}{5}{section*.7}%
+\contentsline {subsection}{Data Collection}{5}{section*.8}%
+\contentsline {subsection}{Study Variables}{6}{section*.10}%
+\contentsline {subsection}{Statistical Analysis}{7}{section*.11}%
+\contentsline {subsubsection}{Power calculation}{7}{section*.12}%
+\contentsline {subsubsection}{Regression modeling}{9}{section*.14}%
+\contentsline {section}{Results}{11}{section*.15}%
+\contentsline {subsection}{Patient characteristics}{11}{section*.16}%
+\contentsline {subsection}{Kaplan-Meier survival curves}{13}{section*.19}%
+\contentsline {subsubsection}{Demographics}{13}{section*.20}%
+\contentsline {subsubsection}{Comorbid conditions}{16}{section*.24}%
+\contentsline {subsubsection}{Medications}{25}{section*.34}%
+\contentsline {subsection}{Logistic regression model}{32}{section*.42}%
+\contentsline {subsection}{Cox regression model}{35}{section*.47}%
+\contentsline {section}{References}{36}{section*.50}%

@@ -1,0 +1,26 @@
+Dataset Name:		NGA10126
+Dataset Description: NGA10126 Final	
+Item Status: 	
+Study Name: 	WHO Novel Coronavirus (nCoV) Database - Nigeria - 10126
+Protocol ID: 	Novel Coronavirus (WHO_nCoV)  - NGA - 10126
+Date: 	2021-Sep-28
+Subjects: 	1
+Study Event Definitions	3
+Study Event Definition 1	1_ADMISSION	E1
+CRF1	COVADM3 - V1.3	C1
+Study Event Definition 2	2_FOLLOWUP	E2
+CRF3	COVFUP2 - V1.3	C3
+Study Event Definition 3	3_OUTCOME	E3
+CRF5	COVDIV3 - V1.2	C5
+
+
+
+
+
+
+
+
+
+
+Study Subject ID	Protocol ID	 admpro_E1_C1 	 admsit_E1_C1 	 admcou_E1_C1 	 admpar_E1_C1 	 adm01_E1_C1 	 adm03_E1_C1 	 adm04_E1_C1 	 adm05_E1_C1 	 adm06_E1_C1 	 adm07_E1_C1 	 adm09_1_E1_C1 	 adm10_E1_C1 	 adm11_E1_C1 	 adm12_E1_C1 	 adm13_E1_C1 	 adm14_E1_C1 	 adm15_E1_C1 	 adm16_E1_C1 	 adm17_E1_C1 	 adm18_1_E1_C1 	 adm18_2_E1_C1 	 adm19_E1_C1 	 adm20_E1_C1 	 adm21_E1_C1 	 adm21s1_E1_C1 	 adm21s2_E1_C1 	 adm22_E1_C1 	 adm23_E1_C1 	 adm25_E1_C1 	 adm26_E1_C1 	 adm27_E1_C1 	 adm28_E1_C1 	 adm29_E1_C1 	 adm30_E1_C1 	 adm31_E1_C1 	 adm32_E1_C1 	 adm33_E1_C1 	 adm34_E1_C1 	 adm35_E1_C1 	 adm36_E1_C1 	 adm37_E1_C1 	 adm38_E1_C1 	 adm39_E1_C1 	 adm40_E1_C1 	 adm41_E1_C1 	 adm42_E1_C1 	 adm43_E1_C1 	 adm44_E1_C1 	 adm45_E1_C1 	 adm46_E1_C1 	 adm47_E1_C1 	 adm48_E1_C1 	 adm48s1_E1_C1 	 adm49_E1_C1 	 adm48s2_E1_C1 	 adm50_E1_C1 	 adm51_E1_C1 	 adm52_E1_C1 	 adm53_E1_C1 	 adm54_E1_C1 	 adm55_E1_C1 	 adm56_E1_C1 	 adm57_E1_C1 	 adm58_E1_C1 	 adm59_E1_C1 	 adm60_E1_C1 	 adm61_E1_C1 	 adm62_E1_C1 	 adm63_E1_C1 	 adm64_E1_C1 	 adm65_E1_C1 	 adm66_E1_C1 	 adm67_E1_C1 	 adm68_E1_C1 	 adm69_E1_C1 	 adm70_E1_C1 	 adm71_E1_C1 	 adm72_E1_C1 	 adm73_E1_C1 	 adm74_E1_C1 	 adm75_E1_C1 	 adm76_E1_C1 	 adm77_E1_C1 	 adm78_E1_C1 	 adm79_E1_C1 	 adm80_E1_C1 	 adm81_E1_C1 	 adm82_E1_C1 	 adm83_E1_C1 	 adm84_E1_C1 	 adm85_E1_C1 	 adm86_E1_C1 	 adm87_E1_C1 	 adm88_E1_C1 	 adm89_E1_C1 	 adm32a_E1_C1 	 adm69a_E1_C1 	 adm69b_E1_C1 	 adm75s_E1_C1 	 adm90s__E1_C1 	 adm91s_1_E1_C1 	 adm92s__E1_C1 	 adm93s__E1_C1 	 adm94s__E1_C1 	 adm95s__E1_C1 	 adm96s__E1_C1 	 adm97s__E1_C1 	 adm98s__E1_C1 	 adm99s__E1_C1 	 adm100s__E1_C1 	 adm101s__E1_C1 	 adm103s__E1_C1 	 adm104s__E1_C1 	 adm105s__E1_C1 	 adm108s__E1_C1 	 adm107s__E1_C1 	 adm106s__E1_C1 	 adm109s__E1_C1 	 adm110s__E1_C1 	 adm111s__E1_C1 	 adm112s__E1_C1 	 adm113s__E1_C1 	 fuppro_E2_1_C3 	 fupsit_E2_1_C3 	 fupcou_E2_1_C3 	 fuppar_E2_1_C3 	 fup01_E2_1_C3 	 fup02_E2_1_C3 	 fup03_E2_1_C3 	 fup04_E2_1_C3 	 fup05_1_E2_1_C3 	 fup05_2_E2_1_C3 	 fup06_E2_1_C3 	 fup07_E2_1_C3 	 fup08_E2_1_C3 	 fup09_E2_1_C3 	 fup09s1_E2_1_C3 	 fup09s2_E2_1_C3 	 fup10_E2_1_C3 	 fup11_E2_1_C3 	 fup12_E2_1_C3 	 fup13_E2_1_C3 	 fup14_E2_1_C3 	 fup15_E2_1_C3 	 fup16_E2_1_C3 	 fup17_E2_1_C3 	 fup18_E2_1_C3 	 fup19_E2_1_C3 	 fup20_E2_1_C3 	 fup21_E2_1_C3 	 fup22_E2_1_C3 	 fup47_E2_1_C3 	 fup48_E2_1_C3 	 fup49_E2_1_C3 	 fup50_E2_1_C3 	 fup51_E2_1_C3 	 fup52_E2_1_C3 	 fup53_E2_1_C3 	 fup54_E2_1_C3 	 fup55_E2_1_C3 	 fup56_E2_1_C3 	 fup57_E2_1_C3 	 fup58_E2_1_C3 	 fup59_E2_1_C3 	 fup60_E2_1_C3 	 fup61_E2_1_C3 	 fup62_E2_1_C3 	 fup63_E2_1_C3 	 fup64_E2_1_C3 	 fup65_E2_1_C3 	 fup66_E2_1_C3 	 fup23s__E2_1_C3 	 fup24s__E2_1_C3 	 fup25s__E2_1_C3 	 fup26s__E2_1_C3 	 fup27s__E2_1_C3 	 fup28s__E2_1_C3 	 fup29s__E2_1_C3 	 fup30s__E2_1_C3 	 fup31s__E2_1_C3 	 fup32s__E2_1_C3 	 fup33s__E2_1_C3 	 fup34s__E2_1_C3 	 fup36s__E2_1_C3 	 fup37s__E2_1_C3 	 fup38s__E2_1_C3 	 fup41s__E2_1_C3 	 fup40s__E2_1_C3 	 fup39s__E2_1_C3 	 fup42s__E2_1_C3 	 fup43s__E2_1_C3 	 fup44s__E2_1_C3 	 fup45s__E2_1_C3 	 fup46s__E2_1_C3 	 fup51s_E2_1_C3 	 dispro_E3_C5 	 dissit_E3_C5 	 discou_E3_C5 	 diapar_E3_C5 	 dis01_E3_C5 	 dis02_E3_C5 	 dis03_E3_C5 	 dis04_E3_C5 	 dis04s1_E3_C5 	 dis05_E3_C5 	 dis06_E3_C5 	 dis07_E3_C5 	 dis08_E3_C5 	 dis10_E3_C5 	 dis11_E3_C5 	 dis12_E3_C5 	 dis13_E3_C5 	 dis14_E3_C5 	 dis15_E3_C5 	 dis16_E3_C5 	 dis17_E3_C5 	 dis18_E3_C5 	 dis19_E3_C5 	 dis20_E3_C5 	 dis21_E3_C5 	 dis22_E3_C5 	 dis23_E3_C5 	 dis24_E3_C5 	 dis25_E3_C5 	 dis26_E3_C5 	 dis27_E3_C5 	 dis28_E3_C5 	 dis29_E3_C5 	 dis31_E3_C5 	 dis32_E3_C5 	 dis33_E3_C5 	 dis34_E3_C5 	 dis35_E3_C5 	 dis36_E3_C5 	 dis37_E3_C5 	 dis46_E3_C5 	 dis47_E3_C5 	 dis48_E3_C5 	 dis27a_E3_C5 	 dis27b_E3_C5 	 dis37a_E3_C5 	
+TTM-003	Novel Coronavirus (WHO_nCoV)  - NGA - 10126	WHO_nCoV	TARABA STATE SPECIALIST HOSPITAL	NIGERIA	TTM-003	2020-07-10	2	1	2	1	1	24	2	2	2	2020-06-27	2020-07-10	36.4	75	20	164	115	2	2	97	1	1	15	2	164	53	2	2	2	2	2	2	2	2	2	2	2	2	2	3	2	2	2	2	2	2	1	2	1	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	1	2	2	2	2	2	2	2	2	2	1	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	Azithromycin	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	WHO_nCoV	TARABA STATE SPECIALIST HOSPITAL	NIGERIA	TTM-003	2020-07-15	36.9	72	19	138	90	2	2	15	96	1	1	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	1	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	AZITHROMYCIN	WHO_nCoV	TARABA STATE SPECIALIST HOSPITAL	NIGERIA	TTM-003	2	1	3	1	2	3	3	2	3	3	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	2	1	2020-07-18	3	2	2	2	
