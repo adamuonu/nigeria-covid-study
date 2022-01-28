@@ -2,7 +2,8 @@
 
 ## Directory Tree
 
-`.
+<code>
+.
 ├── data
 │   ├── analysis
 │   ├── archive
@@ -27,7 +28,7 @@
 └── scripts
     ├── models
     └── processing
-`
+</code>
 
 ## Output Generation
 
