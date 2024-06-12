@@ -1,7 +1,7 @@
 # Clinical profile and predictors of outcomes of hospitalized patients with laboratory confirmed severe acute respiratory syndrome coronavirus 2 in Nigeria: A retrospective analysis of the 13 high burden states
 
 ## Directory Tree
-
+```
 ── 00-as_factor.R
 ├── 01-process-data.R
 ├── 02-clean-the-data.R
@@ -44,6 +44,7 @@
 │   └── Readme.md
 ├── readme.md
 └── site-names.R
+```
 
 1. To generate the final output, run source these files in the given order: `01-process-data.R`, `02-clean-the-data.R`, `03-recode.R`, `04-descriptive-statistics.R`.
 2. Scripts for the regression models are in the `models` folder.
